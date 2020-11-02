@@ -65,8 +65,7 @@
 				049AA89A254FD7800004DD2D /* AppDelegate.m */,
 				049AA89C254FD7800004DD2D /* SceneDelegate.h */,
 				049AA89D254FD7800004DD2D /* SceneDelegate.m */,
-				049AA89F254FD7800004DD2D /* ViewController.h */,
-				049AA8A0254FD7800004DD2D /* ViewController.m */,
+				049AA8B4254FEDEF0004DD2D /* main */,
 				049AA8A2254FD7800004DD2D /* Main.storyboard */,
 				049AA8A5254FD7830004DD2D /* Assets.xcassets */,
 				049AA8A7254FD7830004DD2D /* LaunchScreen.storyboard */,
@@ -74,6 +73,15 @@
 				049AA8AB254FD7830004DD2D /* main.m */,
 			);
 			path = lyricsAnalysis;
+			sourceTree = "<group>";
+		};
+		049AA8B4254FEDEF0004DD2D /* main */ = {
+			isa = PBXGroup;
+			children = (
+				049AA89F254FD7800004DD2D /* ViewController.h */,
+				049AA8A0254FD7800004DD2D /* ViewController.m */,
+			);
+			path = main;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -102,7 +110,9 @@
 		049AA88E254FD77F0004DD2D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				CLASSPREFIX = KN;
 				LastUpgradeCheck = 1200;
+				ORGANIZATIONNAME = kunnan.blog.csdn.net;
 				TargetAttributes = {
 					049AA895254FD7800004DD2D = {
 						CreatedOnToolsVersion = 12.0;
@@ -294,6 +304,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 249PMS4KB9;
 				INFOPLIST_FILE = lyricsAnalysis/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -312,6 +323,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 249PMS4KB9;
 				INFOPLIST_FILE = lyricsAnalysis/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
