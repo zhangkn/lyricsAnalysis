@@ -77,85 +77,6 @@
 }
 
 
-/**
- //锁屏界面开启和监控远程控制事件：
- 
- 
- 在控制台拖动进度条调节进度
- //    commandCenter.togglePlayPauseCommand 耳机线控的暂停/播放
-
- */
-- (void)createRemoteCommandCenter{
-    /**/
-    //远程控制命令中心 iOS 7.1 之后  详情看官方文档：https://developer.apple.com/documentation/mediaplayer/mpremotecommandcenter
-    
-    MPRemoteCommandCenter *commandCenter = [MPRemoteCommandCenter sharedCommandCenter];
-    
-    //   MPFeedbackCommand对象反映了当前App所播放的反馈状态. MPRemoteCommandCenter对象提供feedback对象用于对媒体文件进行喜欢, 不喜欢, 标记的操作. 效果类似于网易云音乐锁屏时的效果
-    
-    //添加喜欢按钮
-    MPFeedbackCommand *likeCommand = commandCenter.likeCommand;
-    likeCommand.enabled = YES;
-    likeCommand.localizedTitle = @"喜欢";
-    [likeCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
-        NSLog(@"喜欢");
-        return MPRemoteCommandHandlerStatusSuccess;
-    }];
-    //添加不喜欢按钮，假装是“上一首”
-    MPFeedbackCommand *dislikeCommand = commandCenter.dislikeCommand;
-    dislikeCommand.enabled = YES;
-    dislikeCommand.localizedTitle = @"上一首";
-    [dislikeCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
-        NSLog(@"上一首");
-        return MPRemoteCommandHandlerStatusSuccess;
-    }];
-    //标记
-    MPFeedbackCommand *bookmarkCommand = commandCenter.bookmarkCommand;
-    bookmarkCommand.enabled = YES;
-    bookmarkCommand.localizedTitle = @"标记";
-    [bookmarkCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
-        NSLog(@"标记");
-        return MPRemoteCommandHandlerStatusSuccess;
-    }];
-    
-    //    commandCenter.togglePlayPauseCommand 耳机线控的暂停/播放
-    __weak typeof(self) weakSelf = self;
-    [commandCenter.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
-        [weakSelf.player pause];
-        return MPRemoteCommandHandlerStatusSuccess;
-    }];
-    [commandCenter.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
-        [weakSelf.player play];
-        return MPRemoteCommandHandlerStatusSuccess;
-    }];
-    //    [commandCenter.previousTrackCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
-    //        NSLog(@"上一首");
-    //        return MPRemoteCommandHandlerStatusSuccess;
-    //    }];
-    
-    [commandCenter.nextTrackCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
-        NSLog(@"下一首");
-        return MPRemoteCommandHandlerStatusSuccess;
-    }];
-    
-    //快进
-    //    MPSkipIntervalCommand *skipBackwardIntervalCommand = commandCenter.skipForwardCommand;
-    //    skipBackwardIntervalCommand.preferredIntervals = @[@(54)];
-    //    skipBackwardIntervalCommand.enabled = YES;
-    //    [skipBackwardIntervalCommand addTarget:self action:@selector(skipBackwardEvent:)];
-    
-    //在控制台拖动进度条调节进度（仿QQ音乐的效果）
-    [commandCenter.changePlaybackPositionCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
-        CMTime totlaTime = weakSelf.player.currentItem.duration;
-        MPChangePlaybackPositionCommandEvent * playbackPositionEvent = (MPChangePlaybackPositionCommandEvent *)event;
-        [weakSelf.player seekToTime:CMTimeMake(totlaTime.value*playbackPositionEvent.positionTime/CMTimeGetSeconds(totlaTime), totlaTime.timescale) completionHandler:^(BOOL finished) {
-        }];
-        return MPRemoteCommandHandlerStatusSuccess;
-    }];
-    
-    
-}
-
 
 -(void)skipBackwardEvent: (MPSkipIntervalCommandEvent *)skipEvent
 {
@@ -192,11 +113,6 @@
 }
 
 
-//在具体的控制器或其它类中捕获处理远程控制事件,当远程控制事件发生时触发该方法, 该方法属于UIResponder类，iOS 7.1 之前经常用
-- (void)remoteControlReceivedWithEvent:(UIEvent *)event{
-    NSLog(@"%ld",event.type);
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"songRemoteControlNotification" object:self userInfo:@{@"eventSubtype":@(event.subtype)}];
-}
 
 //播放控制和监测
 - (void)playControl{
@@ -325,65 +241,6 @@
     
 }
 
-//展示锁屏歌曲信息：图片、歌词、进度、演唱者 播放速率
-- (void)showLockScreenTotaltime:(float)totalTime andCurrentTime:(float)currentTime andRate:(NSInteger)rate andLyricsPoster:(BOOL)isShow{
-    
-    NSMutableDictionary * songDict = [[NSMutableDictionary alloc] init];
-    //设置歌曲题目
-    [songDict setObject:@"多幸运" forKey:MPMediaItemPropertyTitle];
-    //设置歌手名
-    [songDict setObject:@"韩安旭" forKey:MPMediaItemPropertyArtist];
-    //设置专辑名
-    [songDict setObject:@"专辑名" forKey:MPMediaItemPropertyAlbumTitle];
-    //设置歌曲时长
-    [songDict setObject:[NSNumber numberWithDouble:totalTime]  forKey:MPMediaItemPropertyPlaybackDuration];
-    //设置已经播放时长
-    [songDict setObject:[NSNumber numberWithDouble:currentTime] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
-    //设置播放速率
-    //注意：MPNowPlayingInfoCenter的rate 与 self.player.rate 是不同步的，也就是说[self.player pause]暂停播放后的速率rate是0，但MPNowPlayingInfoCenter的rate还是1，就会造成 在锁屏界面点击了暂停按钮，这个时候进度条表面看起来停止了走动，但是其实还是在计时，所以再点击播放的时候，锁屏界面进度条的光标会发生位置闪动， 所以我们需要在暂停或播放时保持播放速率一致
-    [songDict setObject:[NSNumber numberWithInteger:rate] forKey:MPNowPlayingInfoPropertyPlaybackRate];
-    
-    UIImage * lrcImage = [UIImage imageNamed:@"backgroundImage5.jpg"];
-    if (isShow) {
-        
-        //制作带歌词的海报
-        if (!_lrcImageView) {
-            _lrcImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 480,800)];
-        }
-        if (!_lockScreenTableView) {
-            _lockScreenTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 800 - 44 * 7 + 20, 480, 44 * 3) style:UITableViewStyleGrouped];
-            _lockScreenTableView.dataSource = self;
-            _lockScreenTableView.delegate = self;
-            _lockScreenTableView.separatorStyle = NO;
-            _lockScreenTableView.backgroundColor = [UIColor clearColor];
-            [_lockScreenTableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cellID"];
-        }
-        //主要为了把歌词绘制到图片上，已达到更新歌词的目的
-        [_lrcImageView addSubview:self.lockScreenTableView];
-        _lrcImageView.image = lrcImage;
-        _lrcImageView.backgroundColor = [UIColor blackColor];
-        
-        //获取添加了歌词数据的海报图片
-        UIGraphicsBeginImageContextWithOptions(_lrcImageView.frame.size, NO, 0.0);
-        CGContextRef context = UIGraphicsGetCurrentContext();
-        [_lrcImageView.layer renderInContext:context];
-        lrcImage = UIGraphicsGetImageFromCurrentImageContext();
-        _lastImage = lrcImage;
-        UIGraphicsEndImageContext();
-        
-    }else{
-        if (_lastImage) {
-            lrcImage = _lastImage;
-        }
-    }
-    //设置显示的海报图片
-    [songDict setObject:[[MPMediaItemArtwork alloc] initWithImage:lrcImage]
-                 forKey:MPMediaItemPropertyArtwork];
-    
-    
-    [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songDict];
-    
-}
 
 #pragma mark -- Getter
 
@@ -484,5 +341,165 @@
 
 
 
+
+#pragma mark - ******** iOS 7.1之前 处理：远程控制音乐播放
+
+/**
+  iOS 7.1之前
+
+ 
+ 在具体的控制器或其它类中捕获处理远程控制事件,当远程控制事件发生时触发该方法, 该方法属于UIResponder类，iOS 7.1 之前经常用
+ 
+ 重写 remoteControlReceivedWithEvent  来捕获远程控制事件，并根据event.subtype来判别指令意图并作出反应
+ 
+  
+ */
+- (void)remoteControlReceivedWithEvent:(UIEvent *)event{
+    NSLog(@"%ld",event.type);
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"songRemoteControlNotification" object:self userInfo:@{@"eventSubtype":@(event.subtype)}];
+}
+
+#pragma mark - ******** iOS 7.1 之后 监控远程控制事件
+
+/**
+ //锁屏界面开启和监控远程控制事件：
+ https://developer.apple.com/documentation/mediaplayer/mpremotecommandcenter
+ 
+ 
+ 在控制台拖动进度条调节进度
+ //    commandCenter.togglePlayPauseCommand 耳机线控的暂停/播放
+
+ */
+- (void)createRemoteCommandCenter{
+    /**/
+    //远程控制命令中心 iOS 7.1 之后  详情看官方文档：https://developer.apple.com/documentation/mediaplayer/mpremotecommandcenter
+    
+    MPRemoteCommandCenter *commandCenter = [MPRemoteCommandCenter sharedCommandCenter];
+    
+    //   MPFeedbackCommand对象反映了当前App所播放的反馈状态. MPRemoteCommandCenter对象提供feedback对象用于对媒体文件进行喜欢, 不喜欢, 标记的操作. 效果类似于网易云音乐锁屏时的效果
+    
+    //添加喜欢按钮
+    MPFeedbackCommand *likeCommand = commandCenter.likeCommand;
+    likeCommand.enabled = YES;
+    likeCommand.localizedTitle = @"喜欢";
+    [likeCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
+        NSLog(@"喜欢");
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+    //添加不喜欢按钮，假装是“上一首”
+    MPFeedbackCommand *dislikeCommand = commandCenter.dislikeCommand;
+    dislikeCommand.enabled = YES;
+    dislikeCommand.localizedTitle = @"上一首";
+    [dislikeCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
+        NSLog(@"上一首");
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+    //标记
+    MPFeedbackCommand *bookmarkCommand = commandCenter.bookmarkCommand;
+    bookmarkCommand.enabled = YES;
+    bookmarkCommand.localizedTitle = @"标记";
+    [bookmarkCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
+        NSLog(@"标记");
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+    
+    //    commandCenter.togglePlayPauseCommand 耳机线控的暂停/播放
+    __weak typeof(self) weakSelf = self;
+    [commandCenter.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
+        [weakSelf.player pause];
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+    [commandCenter.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
+        [weakSelf.player play];
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+    //    [commandCenter.previousTrackCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
+    //        NSLog(@"上一首");
+    //        return MPRemoteCommandHandlerStatusSuccess;
+    //    }];
+    
+    [commandCenter.nextTrackCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
+        NSLog(@"下一首");
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+    
+    //快进
+    //    MPSkipIntervalCommand *skipBackwardIntervalCommand = commandCenter.skipForwardCommand;
+    //    skipBackwardIntervalCommand.preferredIntervals = @[@(54)];
+    //    skipBackwardIntervalCommand.enabled = YES;
+    //    [skipBackwardIntervalCommand addTarget:self action:@selector(skipBackwardEvent:)];
+    
+    //在控制台拖动进度条调节进度（仿QQ音乐的效果）
+    [commandCenter.changePlaybackPositionCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
+        CMTime totlaTime = weakSelf.player.currentItem.duration;
+        MPChangePlaybackPositionCommandEvent * playbackPositionEvent = (MPChangePlaybackPositionCommandEvent *)event;
+        [weakSelf.player seekToTime:CMTimeMake(totlaTime.value*playbackPositionEvent.positionTime/CMTimeGetSeconds(totlaTime), totlaTime.timescale) completionHandler:^(BOOL finished) {
+        }];
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+    
+    
+}
+
+
+//展示锁屏歌曲信息：图片、歌词、进度、演唱者 播放速率
+- (void)showLockScreenTotaltime:(float)totalTime andCurrentTime:(float)currentTime andRate:(NSInteger)rate andLyricsPoster:(BOOL)isShow{
+    
+    NSMutableDictionary * songDict = [[NSMutableDictionary alloc] init];
+    //设置歌曲题目
+    [songDict setObject:@"多幸运" forKey:MPMediaItemPropertyTitle];
+    //设置歌手名
+    [songDict setObject:@"韩安旭" forKey:MPMediaItemPropertyArtist];
+    //设置专辑名
+    [songDict setObject:@"专辑名" forKey:MPMediaItemPropertyAlbumTitle];
+    //设置歌曲时长
+    [songDict setObject:[NSNumber numberWithDouble:totalTime]  forKey:MPMediaItemPropertyPlaybackDuration];
+    //设置已经播放时长
+    [songDict setObject:[NSNumber numberWithDouble:currentTime] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+    //设置播放速率
+    //注意：MPNowPlayingInfoCenter的rate 与 self.player.rate 是不同步的，也就是说[self.player pause]暂停播放后的速率rate是0，但MPNowPlayingInfoCenter的rate还是1，就会造成 在锁屏界面点击了暂停按钮，这个时候进度条表面看起来停止了走动，但是其实还是在计时，所以再点击播放的时候，锁屏界面进度条的光标会发生位置闪动， 所以我们需要在暂停或播放时保持播放速率一致
+    [songDict setObject:[NSNumber numberWithInteger:rate] forKey:MPNowPlayingInfoPropertyPlaybackRate];
+    
+    UIImage * lrcImage = [UIImage imageNamed:@"backgroundImage5.jpg"];
+    if (isShow) {
+        
+        //制作带歌词的海报
+        if (!_lrcImageView) {
+            _lrcImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 480,800)];
+        }
+        if (!_lockScreenTableView) {
+            _lockScreenTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 800 - 44 * 7 + 20, 480, 44 * 3) style:UITableViewStyleGrouped];
+            _lockScreenTableView.dataSource = self;
+            _lockScreenTableView.delegate = self;
+            _lockScreenTableView.separatorStyle = NO;
+            _lockScreenTableView.backgroundColor = [UIColor clearColor];
+            [_lockScreenTableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cellID"];
+        }
+        //主要为了把歌词绘制到图片上，已达到更新歌词的目的
+        [_lrcImageView addSubview:self.lockScreenTableView];
+        _lrcImageView.image = lrcImage;
+        _lrcImageView.backgroundColor = [UIColor blackColor];
+        
+        //获取添加了歌词数据的海报图片
+        UIGraphicsBeginImageContextWithOptions(_lrcImageView.frame.size, NO, 0.0);
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        [_lrcImageView.layer renderInContext:context];
+        lrcImage = UIGraphicsGetImageFromCurrentImageContext();
+        _lastImage = lrcImage;
+        UIGraphicsEndImageContext();
+        
+    }else{
+        if (_lastImage) {
+            lrcImage = _lastImage;
+        }
+    }
+    //设置显示的海报图片
+    [songDict setObject:[[MPMediaItemArtwork alloc] initWithImage:lrcImage]
+                 forKey:MPMediaItemPropertyArtwork];
+    
+    
+    [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songDict];
+    
+}
 
 @end
