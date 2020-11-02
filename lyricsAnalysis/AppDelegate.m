@@ -4,6 +4,7 @@
 //
 //  Created by mac on 2020/11/2.
 //
+#import "ViewController.h"
 
 #import "AppDelegate.h"
 
@@ -16,6 +17,16 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    
+    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    
+    ViewController * vc = [[ViewController alloc] init];
+    
+    UINavigationController * na = [[UINavigationController alloc] initWithRootViewController:vc];
+    self.window.rootViewController = na;
+    [self.window makeKeyAndVisible];
+
     return YES;
 }
 

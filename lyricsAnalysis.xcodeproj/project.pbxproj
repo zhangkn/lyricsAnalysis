@@ -16,6 +16,9 @@
 		049AA8AC254FD7830004DD2D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 049AA8AB254FD7830004DD2D /* main.m */; };
 		049AA8B9254FF6330004DD2D /* KNAnalyzer.m in Sources */ = {isa = PBXBuildFile; fileRef = 049AA8B8254FF6330004DD2D /* KNAnalyzer.m */; };
 		049AA8BD254FF6CA0004DD2D /* KNLrcModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 049AA8BC254FF6CA0004DD2D /* KNLrcModel.m */; };
+		049AA8C4254FFF9E0004DD2D /* 多幸运.txt in Resources */ = {isa = PBXBuildFile; fileRef = 049AA8C2254FFF9D0004DD2D /* 多幸运.txt */; };
+		049AA8C5254FFF9E0004DD2D /* 多幸运.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 049AA8C3254FFF9E0004DD2D /* 多幸运.mp3 */; };
+		049AA8C8254FFFD70004DD2D /* backgroundImage5.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 049AA8C7254FFFD70004DD2D /* backgroundImage5.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +38,9 @@
 		049AA8B8254FF6330004DD2D /* KNAnalyzer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KNAnalyzer.m; sourceTree = "<group>"; };
 		049AA8BB254FF6CA0004DD2D /* KNLrcModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KNLrcModel.h; sourceTree = "<group>"; };
 		049AA8BC254FF6CA0004DD2D /* KNLrcModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KNLrcModel.m; sourceTree = "<group>"; };
+		049AA8C2254FFF9D0004DD2D /* 多幸运.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "多幸运.txt"; sourceTree = "<group>"; };
+		049AA8C3254FFF9E0004DD2D /* 多幸运.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "多幸运.mp3"; sourceTree = "<group>"; };
+		049AA8C7254FFFD70004DD2D /* backgroundImage5.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = backgroundImage5.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +73,7 @@
 		049AA898254FD7800004DD2D /* lyricsAnalysis */ = {
 			isa = PBXGroup;
 			children = (
+				049AA8C1254FFF7C0004DD2D /* Resource */,
 				049AA8B6254FF6150004DD2D /* tool */,
 				049AA899254FD7800004DD2D /* AppDelegate.h */,
 				049AA89A254FD7800004DD2D /* AppDelegate.m */,
@@ -100,6 +107,16 @@
 				049AA8BC254FF6CA0004DD2D /* KNLrcModel.m */,
 			);
 			path = tool;
+			sourceTree = "<group>";
+		};
+		049AA8C1254FFF7C0004DD2D /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				049AA8C3254FFF9E0004DD2D /* 多幸运.mp3 */,
+				049AA8C2254FFF9D0004DD2D /* 多幸运.txt */,
+				049AA8C7254FFFD70004DD2D /* backgroundImage5.jpg */,
+			);
+			path = Resource;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -162,7 +179,10 @@
 			files = (
 				049AA8A9254FD7830004DD2D /* LaunchScreen.storyboard in Resources */,
 				049AA8A6254FD7830004DD2D /* Assets.xcassets in Resources */,
+				049AA8C5254FFF9E0004DD2D /* 多幸运.mp3 in Resources */,
+				049AA8C8254FFFD70004DD2D /* backgroundImage5.jpg in Resources */,
 				049AA8A4254FD7800004DD2D /* Main.storyboard in Resources */,
+				049AA8C4254FFF9E0004DD2D /* 多幸运.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
